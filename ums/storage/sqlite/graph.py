@@ -62,6 +62,7 @@ def _build_verified_memory(row: dict) -> VerifiedMemory:
         row["source_candidate_id"] = UUID(row["source_candidate_id"])
     if row.get("superseded_by"):
         row["superseded_by"] = UUID(row["superseded_by"])
+    row["supporting_obs"] = _from_json(row.pop("supporting_obs", "[]"))
     return VerifiedMemory(**row)
 
 
@@ -75,6 +76,8 @@ def _build_belief(row: dict) -> Belief:
 def _build_candidate(row: dict) -> MemoryCandidate:
     row = _uuid_row(row)
     row["observation_ids"] = [UUID(v) for v in _from_json(row.pop("observation_ids", "[]"))]
+    row["supporting_obs"] = _from_json(row.pop("supporting_obs", "[]"))
+    row["contradicting_obs"] = _from_json(row.pop("contradicting_obs", "[]"))
     return MemoryCandidate(**row)
 
 
@@ -201,14 +204,17 @@ class SQLiteGraphStore:
 
     async def create_verified_memory(self, memory: VerifiedMemory) -> VerifiedMemory:
         data = memory.model_dump()
+        data["supporting_obs"] = json.dumps(data.get("supporting_obs", []))
         await self._db.execute(
-            "INSERT INTO verified_memories (id, statement, confidence, source_candidate_id, status, version, superseded_by, created_at, updated_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO verified_memories (id, statement, confidence, category, source_candidate_id, supporting_obs, status, version, superseded_by, created_at, updated_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 str(data["id"]),
                 data["statement"],
                 data["confidence"],
+                data.get("category"),
                 str(data["source_candidate_id"]) if data.get("source_candidate_id") else None,
+                data["supporting_obs"],
                 data["status"],
                 data["version"],
                 str(data["superseded_by"]) if data.get("superseded_by") else None,
@@ -225,12 +231,15 @@ class SQLiteGraphStore:
 
     async def update_verified_memory(self, memory: VerifiedMemory) -> VerifiedMemory:
         data = memory.model_dump()
+        data["supporting_obs"] = json.dumps(data.get("supporting_obs", []))
         await self._db.execute(
-            "UPDATE verified_memories SET statement=?, confidence=?, source_candidate_id=?, status=?, version=?, superseded_by=?, updated_at=? WHERE id=?",
+            "UPDATE verified_memories SET statement=?, confidence=?, category=?, source_candidate_id=?, supporting_obs=?, status=?, version=?, superseded_by=?, updated_at=? WHERE id=?",
             (
                 data["statement"],
                 data["confidence"],
+                data.get("category"),
                 str(data["source_candidate_id"]) if data.get("source_candidate_id") else None,
+                data["supporting_obs"],
                 data["status"],
                 data["version"],
                 str(data["superseded_by"]) if data.get("superseded_by") else None,
@@ -240,6 +249,19 @@ class SQLiteGraphStore:
         )
         await self._db.commit()
         return memory
+
+    async def upsert_verified_memory(self, memory: VerifiedMemory) -> VerifiedMemory:
+        existing = await self.get_verified_memory(memory.id)
+        if existing:
+            return await self.update_verified_memory(memory)
+        return await self.create_verified_memory(memory)
+
+    async def find_all_verified_memories(self, limit: int = 100) -> list[VerifiedMemory]:
+        rows = await self._db.fetch_all(
+            "SELECT * FROM verified_memories WHERE status = 'ACTIVE' ORDER BY created_at DESC LIMIT ?",
+            (limit,),
+        )
+        return [_build_verified_memory(r) for r in rows]
 
     async def delete_verified_memory(self, memory_id: UUID) -> None:
         await self._db.execute("DELETE FROM verified_memories WHERE id = ?", (str(memory_id),))
@@ -298,14 +320,21 @@ class SQLiteGraphStore:
     async def create_candidate(self, candidate: MemoryCandidate) -> MemoryCandidate:
         data = candidate.model_dump()
         data["observation_ids"] = json.dumps([str(u) for u in data.get("observation_ids", [])])
+        data["supporting_obs"] = json.dumps(data.get("supporting_obs", []))
+        data["contradicting_obs"] = json.dumps(data.get("contradicting_obs", []))
         await self._db.execute(
-            "INSERT INTO candidates (id, statement, confidence, observation_ids, status, created_at, updated_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO candidates (id, statement, confidence, category, observation_ids, supporting_obs, contradicting_obs, notes, promotion_threshold, status, created_at, updated_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 str(data["id"]),
                 data["statement"],
                 data["confidence"],
+                data.get("category"),
                 data["observation_ids"],
+                data["supporting_obs"],
+                data["contradicting_obs"],
+                data.get("notes"),
+                data["promotion_threshold"],
                 data["status"],
                 data["created_at"],
                 data["updated_at"],
@@ -321,12 +350,19 @@ class SQLiteGraphStore:
     async def update_candidate(self, candidate: MemoryCandidate) -> MemoryCandidate:
         data = candidate.model_dump()
         data["observation_ids"] = json.dumps([str(u) for u in data.get("observation_ids", [])])
+        data["supporting_obs"] = json.dumps(data.get("supporting_obs", []))
+        data["contradicting_obs"] = json.dumps(data.get("contradicting_obs", []))
         await self._db.execute(
-            "UPDATE candidates SET statement=?, confidence=?, observation_ids=?, status=?, updated_at=? WHERE id=?",
+            "UPDATE candidates SET statement=?, confidence=?, category=?, observation_ids=?, supporting_obs=?, contradicting_obs=?, notes=?, promotion_threshold=?, status=?, updated_at=? WHERE id=?",
             (
                 data["statement"],
                 data["confidence"],
+                data.get("category"),
                 data["observation_ids"],
+                data["supporting_obs"],
+                data["contradicting_obs"],
+                data.get("notes"),
+                data["promotion_threshold"],
                 data["status"],
                 data["updated_at"],
                 str(data["id"]),
@@ -334,6 +370,19 @@ class SQLiteGraphStore:
         )
         await self._db.commit()
         return candidate
+
+    async def upsert_candidate(self, candidate: MemoryCandidate) -> MemoryCandidate:
+        existing = await self.get_candidate(candidate.id)
+        if existing:
+            return await self.update_candidate(candidate)
+        return await self.create_candidate(candidate)
+
+    async def find_candidates(self, status: str | None = None) -> list[MemoryCandidate]:
+        if status:
+            rows = await self._db.fetch_all("SELECT * FROM candidates WHERE status = ?", (status,))
+        else:
+            rows = await self._db.fetch_all("SELECT * FROM candidates")
+        return [_build_candidate(r) for r in rows]
 
     async def delete_candidate(self, candidate_id: UUID) -> None:
         await self._db.execute("DELETE FROM candidates WHERE id = ?", (str(candidate_id),))

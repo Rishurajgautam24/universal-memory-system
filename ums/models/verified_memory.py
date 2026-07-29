@@ -18,7 +18,9 @@ class VerifiedMemory(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     statement: str
     confidence: float
+    category: str | None = None
     source_candidate_id: UUID | None = None
+    supporting_obs: list[dict] = Field(default_factory=list)
     status: MemoryStatus = MemoryStatus.ACTIVE
     version: int = Field(default=1, ge=1)
     superseded_by: UUID | None = None

@@ -11,6 +11,7 @@ from ums.utils.datetime import now_utc
 class EventType(str, Enum):
     OBSERVATION = "OBSERVATION"
     CANDIDATE = "CANDIDATE"
+    CANDIDATE_PROMOTED = "CANDIDATE_PROMOTED"
     MEMORY = "MEMORY"
     ENTITY = "ENTITY"
     RELATIONSHIP = "RELATIONSHIP"

@@ -12,6 +12,7 @@ class CandidateStatus(str, Enum):
     ACCUMULATING = "ACCUMULATING"
     CORROBORATED = "CORROBORATED"
     CONFLICTED = "CONFLICTED"
+    CONTRADICTED = "CONTRADICTED"
     ARCHIVED = "ARCHIVED"
     PROMOTED = "PROMOTED"
 
@@ -20,7 +21,12 @@ class MemoryCandidate(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     statement: str
     confidence: float
+    category: str | None = None
     observation_ids: list[UUID] = Field(default_factory=list)
+    supporting_obs: list[dict] = Field(default_factory=list)
+    contradicting_obs: list[dict] = Field(default_factory=list)
+    notes: str | None = None
+    promotion_threshold: float = 0.75
     status: CandidateStatus = CandidateStatus.ACCUMULATING
     created_at: str = Field(default_factory=lambda: now_utc().isoformat().replace("+00:00", "Z"))
     updated_at: str = Field(default_factory=lambda: now_utc().isoformat().replace("+00:00", "Z"))
