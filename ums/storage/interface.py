@@ -84,6 +84,9 @@ class GraphStoreInterface(StorageInterface):
     @abstractmethod
     async def delete_belief(self, belief_id: UUID) -> None: ...
 
+    @abstractmethod
+    async def find_all_beliefs(self, min_confidence: float | None = None) -> list[Belief]: ...
+
     # Candidate CRUD
     @abstractmethod
     async def create_candidate(self, candidate: MemoryCandidate) -> MemoryCandidate: ...
