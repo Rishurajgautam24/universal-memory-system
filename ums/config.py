@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     workers: int = 1
     reload: bool = False
     log_level: str = "INFO"
-    database_url: str = "sqlite+aiosqlite:///./data/ums.db"
+    database_url: str = "sqlite+aiosqlite://data/ums.db"
     openrouter_api_key: str = ""
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
     extraction_model: str = "openai/gpt-4o-mini"

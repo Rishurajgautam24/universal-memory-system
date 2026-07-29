@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Universal Memory System",
+    "entity_type": "CONCEPT",
+    "confidence": 0.95,
+    "description": "A persistent memory layer for AI applications"
+  },
+  {
+    "name": "SQLite",
+    "entity_type": "CONCEPT",
+    "confidence": 0.9,
+    "description": "Database used for UMS storage"
+  },
+  {
+    "name": "FastAPI",
+    "entity_type": "CONCEPT",
+    "confidence": 0.9,
+    "description": "Web framework used for UMS API gateway"
+  },
+  {
+    "name": "OpenRouter",
+    "entity_type": "CONCEPT",
+    "confidence": 0.85,
+    "description": "LLM provider for extraction and synthesis"
+  }
+]

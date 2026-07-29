@@ -1,0 +1,29 @@
+Alice: So I've been thinking about how to structure the Universal Memory System. The core idea is to give AI assistants persistent memory across sessions.
+
+Bob: Right, so they don't forget context every time a conversation ends. What's the architecture?
+
+Alice: We have an observation layer that processes conversations and extracts structured data. Then a distillation pipeline that promotes high-confidence observations into verified memories. Finally, a recall engine that retrieves relevant context for new tasks.
+
+Bob: Makes sense. Are you using SQLite for storage?
+
+Alice: Yes, with aiosqlite for async access. The schema has tables for observations, candidates, verified memories, entities, relationships, beliefs, and timeline events. We run migrations on startup.
+
+Bob: What about the API? How do external systems interact with it?
+
+Alice: We built a FastAPI gateway with endpoints for observe, recall, search, timeline, explain, and reflect. Each endpoint has authentication via Bearer tokens and configurable rate limiting.
+
+Bob: And the distillation pipeline? How does that work?
+
+Alice: It runs periodically or on-demand. It reads accumulated candidates, checks for corroboration across multiple observations, and promotes candidates that meet the confidence threshold to verified_memories. It also handles deduplication.
+
+Bob: I notice you're using OpenRouter for LLM access. That handles extraction and synthesis?
+
+Alice: Exactly. The observation engine uses LLM-based extraction to identify entities, facts, and relationships from conversations. The recall engine assembles context by loading relevant beliefs, projects, and timeline events.
+
+Bob: What about the recall quality? How do you rank relevance?
+
+Alice: We use semantic similarity via embeddings. The intent parser extracts what the user needs, then we rank beliefs and memories by relevance to that intent. The context assembler builds a coherent package from the top results.
+
+Bob: Sounds like a solid foundation. What's next on the roadmap?
+
+Alice: We need integration tests, Docker deployment, and CLI scripts. Then Phase 2 will add multi-user support and more sophisticated reflection capabilities.

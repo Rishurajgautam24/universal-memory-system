@@ -9,7 +9,7 @@ def test_settings_defaults():
     assert s.workers == 1
     assert s.reload is False
     assert s.log_level == "INFO"
-    assert s.database_url == "sqlite+aiosqlite:///./data/ums.db"
+    assert s.database_url == "sqlite+aiosqlite://data/ums.db"
     assert s.embedding_model == "openai/text-embedding-3-small"
 
 

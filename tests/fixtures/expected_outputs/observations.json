@@ -1,0 +1,32 @@
+[
+  {
+    "statement": "Alice is building a Universal Memory System for AI assistants",
+    "confidence": 0.9,
+    "category": "CONVERSATION",
+    "source": "coding_discussion"
+  },
+  {
+    "statement": "UMS uses SQLite with aiosqlite for async database access",
+    "confidence": 0.85,
+    "category": "CONVERSATION",
+    "source": "coding_discussion"
+  },
+  {
+    "statement": "The UMS architecture has observation, distillation, and recall layers",
+    "confidence": 0.85,
+    "category": "CONVERSATION",
+    "source": "coding_discussion"
+  },
+  {
+    "statement": "UMS uses FastAPI for its API gateway with Bearer token authentication",
+    "confidence": 0.8,
+    "category": "CONVERSATION",
+    "source": "coding_discussion"
+  },
+  {
+    "statement": "OpenRouter provides LLM access for extraction and synthesis in UMS",
+    "confidence": 0.8,
+    "category": "CONVERSATION",
+    "source": "coding_discussion"
+  }
+]
