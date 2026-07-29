@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field, field_validator
@@ -21,3 +22,20 @@ class Distillation(BaseModel):
         if not 0.0 <= v <= 1.0:
             raise ValueError(f"Confidence must be between 0.0 and 1.0, got {v}")
         return v
+
+
+class CycleStatus(str, Enum):
+    RUNNING = "RUNNING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+
+
+class DistillationCycle(BaseModel):
+    started_at: str
+    status: CycleStatus
+    observations_read: int = 0
+    candidates_promoted: int = 0
+    candidates_created: int = 0
+    completed_at: str | None = None
+    summary: str | None = None
+    errors: list[str] = Field(default_factory=list)

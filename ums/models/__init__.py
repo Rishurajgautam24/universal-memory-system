@@ -1,7 +1,7 @@
 from ums.models.audit import AuditAction, AuditLogEntry
 from ums.models.belief import Belief
 from ums.models.candidate import CandidateStatus, MemoryCandidate
-from ums.models.distillation import Distillation
+from ums.models.distillation import CycleStatus, Distillation, DistillationCycle
 from ums.models.entity import Entity, EntityType
 from ums.models.identity import Identity
 from ums.models.observation import Observation, ObservationCategory, ObservationStage
@@ -16,7 +16,9 @@ __all__ = [
     "AuditLogEntry",
     "Belief",
     "CandidateStatus",
+    "CycleStatus",
     "Distillation",
+    "DistillationCycle",
     "Entity",
     "EntityType",
     "EventType",
