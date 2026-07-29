@@ -29,6 +29,12 @@ class Settings(BaseSettings):
     distillation_batch_size: int = 10
     distillation_interval_hours: int = 4
     admin_api_key: str | None = None
+    rate_limit_observe_per_hour: int = 100
+    rate_limit_recall_per_hour: int = 500
+    rate_limit_search_per_hour: int = 200
+    rate_limit_timeline_per_hour: int = 200
+    rate_limit_explain_per_hour: int = 100
+    rate_limit_reflect_per_hour: int = 10
 
 
 settings = Settings()

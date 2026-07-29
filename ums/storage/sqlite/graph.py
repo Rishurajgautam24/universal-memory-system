@@ -315,6 +315,16 @@ class SQLiteGraphStore:
         await self._db.execute("DELETE FROM beliefs WHERE id = ?", (str(belief_id),))
         await self._db.commit()
 
+    async def find_all_beliefs(self, min_confidence: float | None = None) -> list[Belief]:
+        if min_confidence is not None:
+            rows = await self._db.fetch_all(
+                "SELECT * FROM beliefs WHERE confidence >= ? ORDER BY created_at DESC",
+                (min_confidence,),
+            )
+        else:
+            rows = await self._db.fetch_all("SELECT * FROM beliefs ORDER BY created_at DESC")
+        return [_build_belief(r) for r in rows]
+
     # --- Candidate CRUD ---
 
     async def create_candidate(self, candidate: MemoryCandidate) -> MemoryCandidate:
