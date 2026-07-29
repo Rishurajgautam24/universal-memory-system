@@ -3,16 +3,15 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from ums.models.observation import Observation
-from ums.models.candidate import MemoryCandidate
-from ums.models.verified_memory import VerifiedMemory
-from ums.models.entity import Entity
-from ums.models.relationship import Relationship
+from ums.models.audit import AuditLogEntry
 from ums.models.belief import Belief
+from ums.models.candidate import MemoryCandidate
+from ums.models.entity import Entity
 from ums.models.identity import Identity
 from ums.models.project import Project
+from ums.models.relationship import Relationship
 from ums.models.timeline import TimelineEvent
-from ums.models.audit import AuditLogEntry
+from ums.models.verified_memory import VerifiedMemory
 
 
 class StorageInterface(ABC):

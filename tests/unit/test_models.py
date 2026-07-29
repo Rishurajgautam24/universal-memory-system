@@ -4,7 +4,7 @@ import pytest
 
 from ums.models.audit import AuditAction, AuditLogEntry
 from ums.models.candidate import CandidateStatus, MemoryCandidate
-from ums.models.observation import Observation, ObservationCategory, ObservationStage
+from ums.models.observation import Observation, ObservationStage
 from ums.models.verified_memory import MemoryStatus, VerifiedMemory
 
 

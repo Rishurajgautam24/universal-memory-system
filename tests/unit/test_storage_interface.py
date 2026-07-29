@@ -1,5 +1,3 @@
-from uuid import UUID
-
 import pytest
 
 from ums.storage.interface import (
