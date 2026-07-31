@@ -1,8 +1,3 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Rishurajgautam24/universal-memory-system/main/docs/assets/ums-logo-dark.svg">
-  <img alt="UMS Logo" src="https://raw.githubusercontent.com/Rishurajgautam24/universal-memory-system/main/docs/assets/ums-logo-light.svg" width="100%">
-</picture>
-
 # Universal Memory System (UMS)
 
 > **Persistent memory layer for AI applications** — Give your AI assistants long-term memory, identity, and contextual awareness.
@@ -336,7 +331,6 @@ ums/
 │   ├── component/                # Component tests
 │   └── integration/              # Integration tests
 ├── scripts/                      # Utility scripts
-├── docs/                         # Documentation
 ├── pyproject.toml                # Project configuration
 ├── Dockerfile                    # Docker support
 └── docker-compose.yml            # Docker Compose
@@ -499,7 +493,6 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## 🌟 Support
 
-- [Documentation](docs/00_README.md)
 - [Issue Tracker](https://github.com/Rishurajgautam24/universal-memory-system/issues)
 - [Discussions](https://github.com/Rishurajgautam24/universal-memory-system/discussions)
 

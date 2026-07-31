@@ -87,7 +87,6 @@ ums/
 │   ├── unit/              # Unit tests
 │   ├── component/         # Component tests
 │   └── integration/       # Integration tests
-└── docs/                  # Documentation
 ```
 
 ## 🔧 Adding a New Feature
