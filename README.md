@@ -502,4 +502,5 @@ MIT License — see [LICENSE](LICENSE) for details.
   <b>Built with ❤️ for the AI community</b><br>
   <i>Memory should be infrastructure, not a feature.</i>
 </p>
+
 Connect with me over [Linkedin](https://www.linkedin.com/in/rishurajgautam/)
