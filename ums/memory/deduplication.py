@@ -26,5 +26,5 @@ def merge_observation_into_candidate(candidate: MemoryCandidate, observation: Ob
                "statement": observation.statement, "confidence": observation.confidence}
     candidate.supporting_obs.append(obs_ref)
     candidate.confidence = calculate_new_confidence(candidate.confidence, observation.confidence, decay)
-    candidate.updated_at = now_utc().isoformat()
+    candidate.updated_at = now_utc().isoformat().replace("+00:00", "Z")
     return candidate

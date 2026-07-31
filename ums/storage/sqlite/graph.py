@@ -7,7 +7,7 @@ from ums.models.belief import Belief
 from ums.models.candidate import MemoryCandidate
 from ums.models.entity import Entity
 from ums.models.identity import Identity
-from ums.models.observation import Observation
+from ums.models.observation import Observation, ObservationCategory, ObservationStage
 from ums.models.project import Project
 from ums.models.relationship import Relationship
 from ums.models.verified_memory import VerifiedMemory
@@ -46,6 +46,10 @@ def _build_entity(row: dict) -> Entity:
 
 def _build_observation(row: dict) -> Observation:
     row = _uuid_row(row)
+    if row.get("category"):
+        row["category"] = ObservationCategory(row["category"])
+    if row.get("stage"):
+        row["stage"] = ObservationStage(row["stage"])
     return Observation(**row)
 
 
@@ -107,6 +111,63 @@ class SQLiteGraphStore:
             return True
         except BaseException:  # noqa: BLE001
             return False
+
+    # --- Observation CRUD ---
+
+    async def create_observation(self, observation: Observation) -> Observation:
+        data = observation.model_dump()
+        await self._db.execute(
+            "INSERT INTO observations (id, source, session_id, raw_text, statement, confidence, category, stage, created_at, updated_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                str(data["id"]),
+                data["source"],
+                data["session_id"],
+                data["raw_text"],
+                data["statement"],
+                data["confidence"],
+                data["category"].value if data.get("category") else None,
+                data["stage"].value if data.get("stage") else "PENDING",
+                data["created_at"],
+                data["updated_at"],
+            ),
+        )
+        await self._db.commit()
+        return observation
+
+    async def get_observation(self, observation_id: UUID) -> Observation | None:
+        row = await self._db.fetch_one("SELECT * FROM observations WHERE id = ?", (str(observation_id),))
+        return _build_observation(row) if row else None
+
+    async def update_observation(self, observation: Observation) -> Observation:
+        data = observation.model_dump()
+        await self._db.execute(
+            "UPDATE observations SET source=?, session_id=?, raw_text=?, statement=?, confidence=?, category=?, stage=?, updated_at=? WHERE id=?",
+            (
+                data["source"],
+                data["session_id"],
+                data["raw_text"],
+                data["statement"],
+                data["confidence"],
+                data["category"].value if data.get("category") else None,
+                data["stage"].value if data.get("stage") else "PENDING",
+                data["updated_at"],
+                str(data["id"]),
+            ),
+        )
+        await self._db.commit()
+        return observation
+
+    async def delete_observation(self, observation_id: UUID) -> None:
+        await self._db.execute("DELETE FROM observations WHERE id = ?", (str(observation_id),))
+        await self._db.commit()
+
+    async def find_observations_by_stage(self, stage: str, limit: int = 100) -> list[Observation]:
+        rows = await self._db.fetch_all(
+            "SELECT * FROM observations WHERE stage = ? ORDER BY created_at ASC LIMIT ?",
+            (stage, limit),
+        )
+        return [_build_observation(r) for r in rows]
 
     # --- Entity CRUD ---
 

@@ -149,6 +149,13 @@ MIGRATIONS: list[tuple[int, str]] = [
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS embeddings (
+            id TEXT PRIMARY KEY,
+            vector TEXT NOT NULL,
+            metadata TEXT,
+            updated_at TEXT NOT NULL
+        );
         """,
     ),
 ]

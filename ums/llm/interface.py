@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+
 from pydantic import BaseModel
 
 
@@ -10,7 +10,7 @@ class LLMMessage(BaseModel):
 
 class LLMResponse(BaseModel):
     content: str
-    usage: Optional[dict] = None
+    usage: dict | None = None
     model: str
     provider: str
 
@@ -27,14 +27,14 @@ class LLMProvider(ABC):
     @abstractmethod
     async def complete(
         self,
-        messages: List[LLMMessage],
-        model: Optional[str] = None,
+        messages: list[LLMMessage],
+        model: str | None = None,
         temperature: float = 0.0,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
         json_mode: bool = False,
     ) -> LLMResponse: ...
 
     @abstractmethod
     async def embed(
-        self, texts: List[str], model: Optional[str] = None
-    ) -> List[List[float]]: ...
+        self, texts: list[str], model: str | None = None
+    ) -> list[list[float]]: ...

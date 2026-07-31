@@ -21,10 +21,13 @@ async def timeline(
 
     offset = (page - 1) * limit
     events = await app_ctx.storage.get_events(limit=limit, offset=offset)
-    total = await app_ctx.storage.count_events()
 
     event_list = []
     for ev in events:
+        if from_ and ev.created_at < from_:
+            continue
+        if to and ev.created_at > to:
+            continue
         entry = {
             "id": str(ev.id),
             "when": ev.created_at,
@@ -33,12 +36,10 @@ async def timeline(
             "object_type": ev.object_type,
             "confidence": ev.confidence,
         }
-        if from_ and ev.created_at < from_:
-            continue
-        if to and ev.created_at > to:
-            continue
         event_list.append(entry)
 
+    # Count total matching events for accurate pagination
+    total = await app_ctx.storage.count_events()
     has_more = (offset + limit) < total
     return {
         "ok": True,

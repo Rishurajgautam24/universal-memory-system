@@ -1,17 +1,15 @@
 import logging
-from typing import Optional
 
 from ums.config import settings
-from ums.models.audit import AuditLogEntry, AuditAction
-from ums.models.candidate import MemoryCandidate, CandidateStatus
-from ums.models.observation import Observation
-from ums.models.timeline import TimelineEvent, EventType
-from ums.models.verified_memory import VerifiedMemory, MemoryStatus
-from ums.storage.interface import Storage
+from ums.memory.contradiction import create_contradicted_candidate, detect_contradiction
 from ums.memory.deduplication import is_duplicate, merge_observation_into_candidate
-from ums.memory.contradiction import detect_contradiction, create_contradicted_candidate
 from ums.memory.promotion import check_promotion_eligibility
-from ums.utils.datetime import now_utc
+from ums.models.audit import AuditAction, AuditLogEntry
+from ums.models.candidate import CandidateStatus, MemoryCandidate
+from ums.models.observation import Observation
+from ums.models.timeline import EventType, TimelineEvent
+from ums.models.verified_memory import MemoryStatus, VerifiedMemory
+from ums.storage.interface import Storage
 
 logger = logging.getLogger(__name__)
 
@@ -20,13 +18,13 @@ class MemoryEngine:
     def __init__(self, storage: Storage):
         self._storage = storage
 
-    async def process_observation(self, observation: Observation) -> Optional[MemoryCandidate]:
+    async def process_observation(self, observation: Observation) -> MemoryCandidate | None:
         existing = await self._find_similar_candidate(observation)
         if existing:
             return await self._reinforce_candidate(existing, observation)
         return await self._create_candidate(observation)
 
-    async def _find_similar_candidate(self, observation: Observation) -> Optional[MemoryCandidate]:
+    async def _find_similar_candidate(self, observation: Observation) -> MemoryCandidate | None:
         candidates = await self._storage.find_candidates(status=CandidateStatus.ACCUMULATING.value)
         for cand in candidates:
             if is_duplicate(observation.statement, cand.statement, threshold=settings.semantic_dedup_threshold):

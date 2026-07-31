@@ -21,4 +21,6 @@ def rank_and_deduplicate(
         if key not in seen:
             seen.add(key)
             result.append(item)
+    # Sort by confidence descending if available
+    result.sort(key=lambda x: x.get("confidence", 0.0), reverse=True)
     return result[:limit]

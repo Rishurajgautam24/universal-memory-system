@@ -1,13 +1,12 @@
-from typing import List, Optional
 
 from openai import AsyncOpenAI
 
 from ums.config import settings
-from ums.llm.interface import LLMProvider, LLMMessage, LLMResponse
+from ums.llm.interface import LLMMessage, LLMProvider, LLMResponse
 
 
 class OpenRouterProvider(LLMProvider):
-    def __init__(self, client: Optional[AsyncOpenAI] = None):
+    def __init__(self, client: AsyncOpenAI | None = None):
         self._client = client or AsyncOpenAI(
             api_key=settings.openrouter_api_key,
             base_url=settings.openrouter_base_url,
@@ -23,10 +22,10 @@ class OpenRouterProvider(LLMProvider):
 
     async def complete(
         self,
-        messages: List[LLMMessage],
-        model: Optional[str] = None,
+        messages: list[LLMMessage],
+        model: str | None = None,
         temperature: float = 0.0,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
         json_mode: bool = False,
     ) -> LLMResponse:
         kwargs = dict(
@@ -48,8 +47,8 @@ class OpenRouterProvider(LLMProvider):
         )
 
     async def embed(
-        self, texts: List[str], model: Optional[str] = None
-    ) -> List[List[float]]:
+        self, texts: list[str], model: str | None = None
+    ) -> list[list[float]]:
         model = model or settings.embedding_model
         response = await self._client.embeddings.create(model=model, input=texts)
         return [d.embedding for d in response.data]

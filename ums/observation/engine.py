@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional
 from uuid import UUID, uuid4
 
 from ums.llm.interface import LLMProvider
+from ums.models.observation import ObservationStage
 from ums.observation.extractors import extract_observations
 from ums.observation.segmenter import segment_conversation
 from ums.storage.interface import Storage
-
-from ums.models.observation import ObservationStage
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +30,7 @@ class ObservationEngine:
         source: str,
         conversation: str,
         session_id: str,
-        metadata: Optional[dict] = None,
+        metadata: dict | None = None,
     ) -> UUID:
         if not conversation.strip():
             raise ValueError("conversation is empty")

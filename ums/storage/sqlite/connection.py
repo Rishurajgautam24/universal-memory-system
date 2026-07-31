@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 import aiosqlite
 
 from ums.storage.sqlite.migrations import MIGRATIONS
@@ -13,6 +15,10 @@ class DatabaseManager:
         self._db: aiosqlite.Connection | None = None
 
     async def initialize(self):
+        if self._url != ":memory:":
+            db_dir = os.path.dirname(self._url)
+            if db_dir:
+                os.makedirs(db_dir, exist_ok=True)
         self._db = await aiosqlite.connect(self._url)
         self._db.row_factory = aiosqlite.Row
         await self._db.execute("PRAGMA journal_mode=WAL")

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from ums.models.candidate import MemoryCandidate
+from ums.models.observation import Observation, ObservationStage
 from ums.storage.interface import Storage
 from ums.storage.sqlite.audit import SQLiteAuditLog
 from ums.storage.sqlite.connection import DatabaseManager
-from ums.storage.sqlite.graph import SQLiteGraphStore, _build_candidate
+from ums.storage.sqlite.graph import SQLiteGraphStore, _build_observation
 from ums.storage.sqlite.timeline import SQLiteTimelineStore
 from ums.storage.sqlite.vector import SQLiteVectorStore
 
@@ -34,56 +34,54 @@ class SQLiteStorage(SQLiteGraphStore, SQLiteTimelineStore, SQLiteVectorStore, SQ
 
     # --- CandidateQueueInterface ---
 
-    async def enqueue(self, candidate: MemoryCandidate) -> None:
-        await self.create_candidate(candidate)
+    async def enqueue(self, observation: Observation) -> None:
+        await self.create_observation(observation)
 
-    async def dequeue_batch(self, batch_size: int = 10) -> list[MemoryCandidate]:
+    async def dequeue_batch(self, batch_size: int = 10) -> list[Observation]:
         rows = await self._db.fetch_all(
-            "SELECT * FROM candidates WHERE status = 'ACCUMULATING' ORDER BY created_at ASC LIMIT ?",
+            "SELECT * FROM observations WHERE stage = 'PENDING' ORDER BY created_at ASC LIMIT ?",
             (batch_size,),
         )
-        candidates = []
+        observations = []
         for row in rows:
-            candidate = _build_candidate(row)
+            obs = _build_observation(row)
             await self._db.execute(
-                "UPDATE candidates SET status = 'CORROBORATED', updated_at = ? WHERE id = ?",
-                (candidate.updated_at, str(candidate.id)),
+                "UPDATE observations SET stage = 'PROCESSED', updated_at = ? WHERE id = ?",
+                (obs.updated_at, str(obs.id)),
             )
-            candidates.append(candidate)
+            observations.append(obs)
         await self._db.commit()
-        return candidates
+        return observations
 
-    async def requeue(self, candidate_id: UUID) -> None:
+    async def requeue(self, observation_id: UUID) -> None:
         from ums.utils.datetime import now_utc
 
         now = now_utc().isoformat().replace("+00:00", "Z")
         await self._db.execute(
-            "UPDATE candidates SET status = 'ACCUMULATING', updated_at = ? WHERE id = ?",
-            (now, str(candidate_id)),
+            "UPDATE observations SET stage = 'PENDING', updated_at = ? WHERE id = ?",
+            (now, str(observation_id)),
         )
         await self._db.commit()
 
-    async def mark_processed(self, candidate_id: UUID) -> None:
+    async def mark_processed(self, observation_id: UUID) -> None:
         from ums.utils.datetime import now_utc
 
         now = now_utc().isoformat().replace("+00:00", "Z")
         await self._db.execute(
-            "UPDATE candidates SET status = 'PROMOTED', updated_at = ? WHERE id = ?",
-            (now, str(candidate_id)),
+            "UPDATE observations SET stage = 'ARCHIVED', updated_at = ? WHERE id = ?",
+            (now, str(observation_id)),
         )
         await self._db.commit()
 
     async def get_pending_count(self) -> int:
         row = await self._db.fetch_one(
-            "SELECT COUNT(*) AS cnt FROM candidates WHERE status = 'ACCUMULATING'"
+            "SELECT COUNT(*) AS cnt FROM observations WHERE stage = 'PENDING'"
         )
         return row["cnt"] if row else 0
 
-    async def get_by_stage(self, stage: str) -> list[MemoryCandidate]:
+    async def get_by_stage(self, stage: str) -> list[Observation]:
         rows = await self._db.fetch_all(
-            "SELECT * FROM candidates WHERE status = ? ORDER BY created_at ASC",
+            "SELECT * FROM observations WHERE stage = ? ORDER BY created_at ASC",
             (stage,),
         )
-        return [_build_candidate(row) for row in rows]
-
-
+        return [_build_observation(row) for row in rows]

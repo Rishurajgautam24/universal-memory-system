@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ums.config import settings
+from ums.models.observation import ObservationCategory
 from ums.storage.interface import Storage
 
 
@@ -12,7 +13,7 @@ class RecallLoaders:
         memories = await self._storage.find_all_verified_memories(limit=50)
         projects = {}
         for m in memories:
-            if m.category == "PROJECT":
+            if m.category == ObservationCategory.CONVERSATION.value:
                 projects[m.statement] = {
                     "name": m.statement,
                     "confidence": m.confidence,
@@ -22,7 +23,7 @@ class RecallLoaders:
 
     async def load_beliefs(self, user_id: str, min_confidence: float | None = None) -> list[dict]:
         beliefs = await self._storage.find_all_beliefs(
-            min_confidence=min_confidence or settings.recall_min_confidence
+            min_confidence=settings.recall_min_confidence if min_confidence is None else min_confidence
         )
         return [
             {

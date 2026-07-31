@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import logging
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
+
+logger = logging.getLogger(__name__)
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -36,7 +40,12 @@ class AuthMiddleware(BaseHTTPMiddleware):
                     "meta": {},
                 },
             )
-        if self._api_key and token != self._api_key:
+        if not self._api_key:
+            logger.warning(
+                "No admin_api_key configured — running in development mode. "
+                "All tokens accepted. Set ADMIN_API_KEY in production."
+            )
+        elif token != self._api_key:
             return JSONResponse(
                 status_code=401,
                 content={
