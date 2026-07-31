@@ -6,7 +6,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/ums.git
+git clone https://github.com/Rishurajgautam24/universal-memory-system.git
 cd ums
 
 # Create environment file
@@ -24,7 +24,7 @@ docker-compose logs -f ums
 
 ```bash
 # Clone and install
-git clone https://github.com/your-org/ums.git
+git clone https://github.com/Rishurajgautam24/universal-memory-system.git
 cd ums
 python -m venv .venv
 source .venv/bin/activate

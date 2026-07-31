@@ -111,9 +111,9 @@ ums/
 ## Getting Help
 
 - 📖 **Documentation:** Start with [README.md](../README.md)
-- 🐛 **Bug Reports:** Use [GitHub Issues](https://github.com/your-org/ums/issues)
-- 💡 **Feature Requests:** Use [GitHub Issues](https://github.com/your-org/ums/issues)
-- 💬 **Discussions:** [GitHub Discussions](https://github.com/your-org/ums/discussions)
+- 🐛 **Bug Reports:** Use [GitHub Issues](https://github.com/Rishurajgautam24/universal-memory-system/issues)
+- 💡 **Feature Requests:** Use [GitHub Issues](https://github.com/Rishurajgautam24/universal-memory-system/issues)
+- 💬 **Discussions:** [GitHub Discussions](https://github.com/Rishurajgautam24/universal-memory-system/discussions)
 - 📧 **Security:** `security@ums.dev`
 
 ---

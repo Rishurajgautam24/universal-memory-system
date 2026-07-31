@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/your-org/ums/main/docs/assets/ums-logo-dark.svg">
-  <img alt="UMS Logo" src="https://raw.githubusercontent.com/your-org/ums/main/docs/assets/ums-logo-light.svg" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Rishurajgautam24/universal-memory-system/main/docs/assets/ums-logo-dark.svg">
+  <img alt="UMS Logo" src="https://raw.githubusercontent.com/Rishurajgautam24/universal-memory-system/main/docs/assets/ums-logo-light.svg" width="100%">
 </picture>
 
 # Universal Memory System (UMS)
@@ -111,7 +111,7 @@ Conversation
 pip install ums
 
 # Or install from source
-git clone https://github.com/your-org/ums.git
+git clone https://github.com/Rishurajgautam24/universal-memory-system.git
 cd ums
 pip install -e ".[dev]"
 ```
@@ -473,7 +473,7 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ```bash
 # Clone and install
-git clone https://github.com/your-org/ums.git
+git clone https://github.com/Rishurajgautam24/universal-memory-system.git
 cd ums
 python -m venv .venv
 source .venv/bin/activate
@@ -500,8 +500,8 @@ MIT License — see [LICENSE](LICENSE) for details.
 ## 🌟 Support
 
 - [Documentation](docs/00_README.md)
-- [Issue Tracker](https://github.com/your-org/ums/issues)
-- [Discussions](https://github.com/your-org/ums/discussions)
+- [Issue Tracker](https://github.com/Rishurajgautam24/universal-memory-system/issues)
+- [Discussions](https://github.com/Rishurajgautam24/universal-memory-system/discussions)
 
 ---
 
