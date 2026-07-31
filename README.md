@@ -9,7 +9,6 @@
 
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-204%2F207%20passing-brightgreen)](https://github.com/your-org/ums/actions)
 [![PyPI](https://img.shields.io/badge/pypi-v0.1.0-orange)](https://pypi.org/project/ums/)
 [![OpenRouter](https://img.shields.io/badge/LLM-OpenRouter-ff6b6b)](https://openrouter.ai/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688)](https://fastapi.tiangolo.com/)
